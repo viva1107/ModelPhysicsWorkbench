@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retroport 模型物理工具</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/icon.png">
+</head>
+<body>
+<header class="top">
+  <div>
+    <div class="brand">Retroport <span>模型物理工具</span></div>
+    <div class="subtitle">Model Physics Workbench <small id="version"></small></div>
+  </div>
+  <div class="pill" id="state">正在读取状态…</div>
+</header>
+
+<main>
+  <section class="intro">
+    <h1>生物、法术、装备物理表生成</h1>
+    <p>从正式服 MD21 模型的 PFDC／PFID 或独立 PHYS 文件生成 <code>WXLCreaturePhysics.phy2</code>、<code>WXLSpellPhysics.phy2</code> 或 <code>WXLEquipPlusPhysics.phy2</code>。只处理物理，不转换或安装模型。</p>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div><span class="step">1</span><h2>物理工具</h2></div>
+      <span class="status" id="tools-status">检查中…</span>
+    </div>
+    <p class="muted">首次生成时会自动下载；也可以在这里提前下载。只下载 Equip Plus 的物理表工具，不安装其装备扩展。</p>
+    <label class="field">数据根目录（物理工具、缓存及默认输出）
+      <div class="input-row"><input id="data-dir" placeholder="例如：D:\ModelPhysics"><button class="btn ghost" data-pick="data">选目录</button></div>
+    </label>
+    <p class="hint">路径会自动保存到程序目录的 model-physics.json，重启后继续有效，不再使用 Administrator 下的 .retroport。更改后如果工具显示“尚未下载”，可重新下载或把原 deps 目录复制过去。</p>
+    <div class="path" id="tools-path"></div>
+    <div class="actions"><button class="btn ghost" id="download">下载物理工具</button></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><div><span class="step">2</span><h2>选择类型与模型</h2></div></div>
+    <label class="field">本次生成的物理表类型
+      <select id="kind">
+        <option value="creature">生物 — WXLCreaturePhysics.phy2</option>
+        <option value="spell">法术 — WXLSpellPhysics.phy2</option>
+        <option value="equipment">装备 — WXLEquipPlusPhysics.phy2</option>
+      </select>
+    </label>
+    <label class="field">M2／PHYS 文件或包含它们的目录
+      <div class="input-row"><input id="input" placeholder="例如：D:\Models\Creature"><button class="btn ghost" data-pick="model">选文件</button><button class="btn ghost" data-pick="input-folder">选目录</button></div>
+    </label>
+    <label class="field">PFID 对应的 PHYS 目录（可留空）
+      <div class="input-row"><input id="phys-dir" placeholder="包含 123456.phys 等文件的目录"><button class="btn ghost" data-pick="phys">选目录</button></div>
+    </label>
+    <div class="two-cols">
+      <label class="field">额外客户端路径前缀（可留空）<input id="prefix" placeholder="例如：creature\custom"></label>
+      <label class="field">输出目录
+        <div class="input-row"><input id="output"><button class="btn ghost" data-pick="output">选目录</button></div>
+      </label>
+    </div>
+    <label class="check"><input type="checkbox" id="recursive" checked> 扫描子目录</label>
+    <p class="hint">每批生成一种物理表。物理表键使用相对模型路径，并额外加入不带目录的文件名；需要其他类型时，切换类型后分别生成。</p>
+    <div class="actions"><button class="btn" id="scan">扫描物理数据</button></div>
+  </section>
+
+  <section class="panel" id="scan-panel" hidden>
+    <div class="panel-head"><div><span class="step">3</span><h2>扫描结果</h2></div><span id="scan-summary" class="status"></span></div>
+    <div class="table-wrap"><table><thead><tr><th>文件</th><th>状态</th><th>物理来源</th><th>客户端物理表键</th></tr></thead><tbody id="scan-rows"></tbody></table></div>
+  </section>
+
+  <section class="panel generate">
+    <div class="panel-head"><div><span class="step">4</span><h2>生成物理表</h2></div></div>
+    <p class="muted">输出到 <code id="output-table">输出目录\DBFilesClient\WXLCreaturePhysics.phy2</code>。已有同类文件会先备份，再增量合并：保留旧记录、追加新记录，同键记录用新数据更新。</p>
+    <div class="actions"><button class="btn big" id="generate">生成 WXLCreaturePhysics.phy2</button><button class="btn ghost" id="open-output">打开输出目录</button></div>
+    <div id="result" class="result" hidden></div>
+  </section>
+
+  <details class="panel log-panel" open><summary>运行日志</summary><pre id="log">暂无日志</pre></details>
+
+  <section class="note">
+    <b>游戏内使用前提：</b>模型本身已能在 3.3.5a 客户端正常显示，并且客户端加载了支持这三类 PHY2 的 <code>wxl-physics</code>。物理表不能代替模型、贴图、DBC、SQL、法术或装备移植。
+  </section>
+</main>
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

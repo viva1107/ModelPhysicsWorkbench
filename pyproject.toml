@@ -1,0 +1,24 @@
+[project]
+name = "retroport-model-physics"
+version = "0.3.0"
+description = "Physics-only Retroport Workbench: generate creature, spell and equipment PHY2 tables from retail M2/PHYS files."
+requires-python = ">=3.10"
+license = { text = "MIT" }
+readme = "README.md"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "Pillow>=10.0"]
+
+[project.gui-scripts]
+model-physics = "retroport.workbench.app:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["retroport*"]
+
+[tool.setuptools.package-data]
+"retroport.workbench" = ["static/*"]
